@@ -23,27 +23,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const auth = getFirebaseAuth();
+    console.log('useAuth - Setting up auth listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('useAuth - Auth state changed, user:', firebaseUser?.uid);
       if (firebaseUser) {
         try {
           const idTokenResult = await firebaseUser.getIdTokenResult();
           const claims = idTokenResult.claims as unknown as CustomClaims;
+          console.log('useAuth - Claims:', claims);
 
-          setUser({
+          const authUser = {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             displayName: firebaseUser.displayName,
             role: (claims.role as UserRole) || UserRole.DRIVER,
             companyId: claims.companyId as string | null,
             active: claims.active !== false,
-          });
+          };
+          console.log('useAuth - Setting user:', authUser);
+          setUser(authUser);
           setLoading(false);
         } catch (error) {
-          console.error('Error loading user claims:', error);
+          console.error('useAuth - Error loading user claims:', error);
           setUser(null);
           setLoading(false);
         }
       } else {
+        console.log('useAuth - No user, setting to null');
         setUser(null);
         setLoading(false);
       }

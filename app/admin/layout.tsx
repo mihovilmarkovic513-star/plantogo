@@ -10,10 +10,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
+    console.log('AdminLayout - loading:', loading, 'user:', user);
     if (!loading) {
       if (!user) {
+        console.log('No user, redirecting to login');
         router.push('/login');
       } else if (user.role !== UserRole.SUPER_ADMIN) {
+        console.log('User role is not SUPER_ADMIN:', user.role);
         // Redirect non-super-admins to their appropriate dashboard
         if (user.role === UserRole.COMPANY_ADMIN) {
           router.push('/company');
@@ -22,6 +25,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         } else {
           router.push('/login');
         }
+      } else {
+        console.log('User is SUPER_ADMIN, showing admin dashboard');
       }
     }
   }, [user, loading, router]);
