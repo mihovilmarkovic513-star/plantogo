@@ -18,6 +18,12 @@ export {
   resetDriverPassword,
 } from './phase1-functions';
 
+// Super Admin Initialization
+export {
+  initializeSuperAdmin,
+  createSuperAdmin,
+} from './init-super-admin';
+
 /**
  * User Roles
  */
