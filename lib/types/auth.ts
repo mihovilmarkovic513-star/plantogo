@@ -40,8 +40,61 @@ export interface AuthUser {
   active: boolean;
 }
 
-export interface CustomClaims {
-  role: UserRole;
+export interface User {
+  userId: string;
   companyId: string | null;
+  role: UserRole;
+  username?: string;
+  email?: string;
+  displayName: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   active: boolean;
+  forcePasswordChange?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string;
+}
+
+export interface CreateCompanyAdminInput {
+  companyId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  temporaryPassword: string;
+}
+
+export interface CreateDriverInput {
+  username: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+export interface CreateSupervisorInput {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+export interface UpdateUserStatusInput {
+  userId: string;
+  active: boolean;
+}
+
+export interface ResetDriverPasswordInput {
+  userId: string;
+}
+
+export interface CreateDriverResponse {
+  userId: string;
+  username: string;
+  temporaryPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  temporaryPassword: string;
 }
