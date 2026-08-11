@@ -1,0 +1,71 @@
+/**
+ * Firebase Client SDK
+ * Singleton instance for client-side Firebase operations
+ */
+
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { firebaseConfig, validateFirebaseConfig } from './config';
+
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+let storage: FirebaseStorage;
+
+/**
+ * Initialize Firebase client SDK
+ * Safe to call multiple times - returns existing instance
+ */
+export function initializeFirebase(): FirebaseApp {
+  if (!getApps().length) {
+    validateFirebaseConfig();
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  } else {
+    app = getApps()[0];
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  }
+
+  return app;
+}
+
+/**
+ * Get Firebase Auth instance
+ */
+export function getFirebaseAuth(): Auth {
+  if (!auth) {
+    initializeFirebase();
+  }
+  return auth;
+}
+
+/**
+ * Get Firestore instance
+ */
+export function getFirebaseFirestore(): Firestore {
+  if (!db) {
+    initializeFirebase();
+  }
+  return db;
+}
+
+/**
+ * Get Firebase Storage instance
+ */
+export function getFirebaseStorage(): FirebaseStorage {
+  if (!storage) {
+    initializeFirebase();
+  }
+  return storage;
+}
+
+// Initialize on import
+if (typeof window !== 'undefined') {
+  initializeFirebase();
+}

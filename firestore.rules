@@ -1,0 +1,235 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.role == 'SUPER_ADMIN';
+    }
+    
+    function isCompanyAdmin(companyId) {
+      return isAuthenticated() && 
+             request.auth.token.role == 'COMPANY_ADMIN' &&
+             request.auth.token.companyId == companyId;
+    }
+    
+    function isSupervisor(companyId) {
+      return isAuthenticated() && 
+             request.auth.token.role == 'SUPERVISOR' &&
+             request.auth.token.companyId == companyId;
+    }
+    
+    function isDriver(companyId) {
+      return isAuthenticated() && 
+             request.auth.token.role == 'DRIVER' &&
+             request.auth.token.companyId == companyId;
+    }
+    
+    function canManageCompany(companyId) {
+      return isSuperAdmin() || isCompanyAdmin(companyId);
+    }
+    
+    function canManageOperations(companyId) {
+      return isSuperAdmin() || isCompanyAdmin(companyId) || isSupervisor(companyId);
+    }
+    
+    function isAssignedDriver(driverId) {
+      return isAuthenticated() && 
+             request.auth.token.role == 'DRIVER' &&
+             request.auth.uid == driverId;
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Platform config - Super Admin only
+    match /platform/{document} {
+      allow read, write: if isSuperAdmin();
+    }
+    
+    // Users
+    match /users/{userId} {
+      allow read: if isAuthenticated() && 
+                     (request.auth.uid == userId || 
+                      isSuperAdmin() ||
+                      (resource.data.companyId != null && 
+                       (isCompanyAdmin(resource.data.companyId) || 
+                        isSupervisor(resource.data.companyId))));
+      allow create: if isSuperAdmin() || 
+                       (isCompanyAdmin(request.resource.data.companyId) &&
+                        request.resource.data.role in ['DRIVER', 'SUPERVISOR']);
+      allow update: if isSuperAdmin() || 
+                       isCompanyAdmin(resource.data.companyId) ||
+                       (request.auth.uid == userId && 
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['role', 'companyId', 'active']));
+      allow delete: if isSuperAdmin() || isCompanyAdmin(resource.data.companyId);
+    }
+    
+    // Companies
+    match /companies/{companyId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(companyId) || 
+                     isSupervisor(companyId) ||
+                     isDriver(companyId);
+      allow write: if isSuperAdmin();
+      
+      match /settings/{document} {
+        allow read: if isSuperAdmin() || 
+                       isCompanyAdmin(companyId) || 
+                       isSupervisor(companyId);
+        allow write: if canManageCompany(companyId);
+      }
+    }
+    
+    // Customers
+    match /customers/{customerId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId);
+      allow write: if canManageOperations(request.resource.data.companyId);
+    }
+    
+    // Stores
+    match /stores/{storeId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId);
+      allow write: if canManageOperations(request.resource.data.companyId);
+    }
+    
+    // Tours
+    match /tours/{tourId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     isAssignedDriver(resource.data.driverId);
+      allow create: if canManageOperations(request.resource.data.companyId);
+      allow update: if canManageOperations(resource.data.companyId) ||
+                       (isAssignedDriver(resource.data.driverId) &&
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['companyId', 'driverId', 'tourNumber', 'date']));
+      allow delete: if canManageOperations(resource.data.companyId);
+    }
+    
+    // Tour Stops
+    match /tourStops/{stopId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     (isDriver(resource.data.companyId) && 
+                      get(/databases/$(database)/documents/tours/$(resource.data.tourId)).data.driverId == request.auth.uid);
+      allow create: if canManageOperations(request.resource.data.companyId);
+      allow update: if canManageOperations(resource.data.companyId) ||
+                       (isDriver(resource.data.companyId) && 
+                        get(/databases/$(database)/documents/tours/$(resource.data.tourId)).data.driverId == request.auth.uid &&
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['companyId', 'tourId', 'deliveryId', 'customerId', 'sequence']));
+      allow delete: if canManageOperations(resource.data.companyId);
+    }
+    
+    // Deliveries - STRICT driver access control
+    match /deliveries/{deliveryId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     isAssignedDriver(resource.data.driverId);
+      allow create: if canManageOperations(request.resource.data.companyId);
+      allow update: if canManageOperations(resource.data.companyId) ||
+                       (isAssignedDriver(resource.data.driverId) &&
+                        !request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['companyId', 'driverId', 'customerId', 'customerAddress', 
+                                   'tourId', 'serviceLevelId', 'plannedDate', 'applianceIds']));
+      allow delete: if canManageOperations(resource.data.companyId);
+    }
+    
+    // Appliances
+    match /appliances/{applianceId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     (isDriver(resource.data.companyId) && 
+                      get(/databases/$(database)/documents/deliveries/$(resource.data.deliveryId)).data.driverId == request.auth.uid);
+      allow write: if canManageOperations(request.resource.data.companyId);
+    }
+    
+    // Photos - STRICT driver access control
+    match /photos/{photoId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     (isDriver(resource.data.companyId) && 
+                      get(/databases/$(database)/documents/deliveries/$(resource.data.deliveryId)).data.driverId == request.auth.uid);
+      allow create: if (canManageOperations(request.resource.data.companyId) ||
+                        (isDriver(request.resource.data.companyId) && 
+                         get(/databases/$(database)/documents/deliveries/$(request.resource.data.deliveryId)).data.driverId == request.auth.uid)) &&
+                       request.resource.data.uploadedBy == request.auth.uid;
+      allow update: if false; // Photos are immutable
+      allow delete: if canManageOperations(resource.data.companyId);
+    }
+    
+    // Signatures - STRICT driver access control
+    match /signatures/{signatureId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     (isDriver(resource.data.companyId) && 
+                      get(/databases/$(database)/documents/deliveries/$(resource.data.deliveryId)).data.driverId == request.auth.uid);
+      allow create: if (canManageOperations(request.resource.data.companyId) ||
+                        (isDriver(request.resource.data.companyId) && 
+                         get(/databases/$(database)/documents/deliveries/$(request.resource.data.deliveryId)).data.driverId == request.auth.uid)) &&
+                       request.resource.data.signedBy == request.auth.uid;
+      allow update, delete: if false; // Signatures are immutable
+    }
+    
+    // Checklists
+    match /deliveryChecklists/{checklistId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     (isDriver(resource.data.companyId) && 
+                      get(/databases/$(database)/documents/deliveries/$(resource.data.deliveryId)).data.driverId == request.auth.uid);
+      allow create, update: if canManageOperations(request.resource.data.companyId) ||
+                               (isDriver(request.resource.data.companyId) && 
+                                get(/databases/$(database)/documents/deliveries/$(request.resource.data.deliveryId)).data.driverId == request.auth.uid);
+      allow delete: if canManageOperations(resource.data.companyId);
+    }
+    
+    // Audit Logs - READ ONLY for admins, WRITE via Cloud Functions only
+    match /auditLogs/{logId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId);
+      allow create: if false; // Must be created via Cloud Functions
+      allow update, delete: if false; // Immutable
+    }
+    
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == resource.data.userId;
+      allow create: if false; // Created via Cloud Functions
+      allow update: if isAuthenticated() && 
+                       request.auth.uid == resource.data.userId &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['read', 'readAt']);
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    // Checklist Templates
+    match /checklistTemplates/{templateId} {
+      allow read: if isSuperAdmin() || 
+                     isCompanyAdmin(resource.data.companyId) || 
+                     isSupervisor(resource.data.companyId) ||
+                     isDriver(resource.data.companyId);
+      allow write: if canManageCompany(request.resource.data.companyId);
+    }
+  }
+}
