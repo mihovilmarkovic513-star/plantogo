@@ -53,9 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          role: claims.role || userData.role,
-          companyId: claims.companyId || userData.companyId,
-          active: claims.active !== undefined ? claims.active : userData.active,
+          displayName: firebaseUser.displayName,
+          role: claims.role as UserRole || UserRole.DRIVER,
+          companyId: claims.companyId as string | null || null,
+          active: claims.active !== false,
         });
       } else {
         // User document doesn't exist - sign out

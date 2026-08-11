@@ -278,7 +278,7 @@ export const createDriver = functions.https.onCall(async (data, context) => {
         forcePasswordChange: true,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdBy: context.auth.uid,
+        createdBy: context.auth!.uid,
       });
 
       return { userId: userRecord.uid, temporaryPassword };
@@ -365,12 +365,12 @@ export const createSupervisor = functions.https.onCall(async (data, context) => 
       forcePasswordChange: true,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      createdBy: context.auth.uid,
+      createdBy: context.auth!.uid,
     });
 
     // Create audit log
     await createAuditLog(
-      context.auth.uid,
+      context.auth!.uid,
       companyId,
       'SUPERVISOR_CREATED',
       'user',
