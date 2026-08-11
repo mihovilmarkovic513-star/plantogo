@@ -1,0 +1,11 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": [
+    {
+      "bucket": "plantogo-1e015.firebasestorage.app",
+      "rules": "storage.rules"
+    }
+  ]
+}
