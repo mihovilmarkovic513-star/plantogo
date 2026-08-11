@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User as FirebaseUser, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { getFirebaseAuth } from '@/lib/firebase/client';
-import { UserRole, AuthUser } from '@/lib/types/auth';
+import { UserRole, AuthUser, CustomClaims } from '@/lib/types/auth';
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -23,25 +23,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const auth = getFirebaseAuth();
-    
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Get custom claims
-        const idTokenResult = await firebaseUser.getIdTokenResult();
-        const claims = idTokenResult.claims;
-        
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          role: (claims.role as UserRole) || UserRole.DRIVER,
-          companyId: (claims.companyId as string | null) || null,
-          active: claims.active !== false,
-        });
+        try {
+          const idTokenResult = await firebaseUser.getIdTokenResult();
+          const claims = idTokenResult.claims as CustomClaims;
+
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            role: (claims.role as UserRole) || UserRole.DRIVER,
+            companyId: claims.companyId as string | null,
+            active: claims.active !== false,
+          });
+          setLoading(false);
+        } catch (error) {
+          console.error('Error loading user claims:', error);
+          setUser(null);
+          setLoading(false);
+        }
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
