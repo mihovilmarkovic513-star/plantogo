@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         try {
           const idTokenResult = await firebaseUser.getIdTokenResult();
-          const claims = idTokenResult.claims as CustomClaims;
+          const claims = idTokenResult.claims as unknown as CustomClaims;
 
           setUser({
             uid: firebaseUser.uid,
