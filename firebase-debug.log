@@ -1,0 +1,313 @@
+[debug] [2026-08-11T22:26:00.453Z] ----------------------------------------------------------------------
+[debug] [2026-08-11T22:26:00.455Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\mihov\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions:initializeSuperAdmin functions:createSuperAdmin
+[debug] [2026-08-11T22:26:00.455Z] CLI Version:   15.26.0
+[debug] [2026-08-11T22:26:00.455Z] Platform:      win32
+[debug] [2026-08-11T22:26:00.455Z] Node Version:  v24.12.0
+[debug] [2026-08-11T22:26:00.455Z] Detected Agent: unknown
+[debug] [2026-08-11T22:26:00.455Z] Time:          Wed Aug 12 2026 00:26:00 GMT+0200 (Central European Summer Time)
+[debug] [2026-08-11T22:26:00.455Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-11T22:26:01.502Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-11T22:26:01.502Z] > authorizing via signed-in user (mihoiantun715@gmail.com)
+[debug] [2026-08-11T22:26:01.502Z] [iam] checking project plantogo-1e015 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-08-11T22:26:01.509Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:01.509Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:01.510Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions [none]
+[debug] [2026-08-11T22:26:01.510Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions  x-goog-user-project=plantogo-1e015
+[debug] [2026-08-11T22:26:01.510Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-08-11T22:26:02.250Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions 200
+[debug] [2026-08-11T22:26:02.250Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-08-11T22:26:02.250Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:02.251Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:02.251Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/plantogo-1e015/serviceAccounts/plantogo-1e015@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-08-11T22:26:02.251Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/plantogo-1e015/serviceAccounts/plantogo-1e015@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-08-11T22:26:02.983Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/plantogo-1e015/serviceAccounts/plantogo-1e015@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-08-11T22:26:02.983Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/plantogo-1e015/serviceAccounts/plantogo-1e015@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'plantogo-1e015'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] +  functions: Finished running predeploy script. 
+[debug] [2026-08-11T22:26:05.265Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.265Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.265Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 [none]
+[debug] [2026-08-11T22:26:05.472Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 200
+[debug] [2026-08-11T22:26:05.472Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 {"projectNumber":"624992913634","projectId":"plantogo-1e015","lifecycleState":"ACTIVE","name":"PlanToGo","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-08-11T20:23:27.931Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-08-11T22:26:05.475Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.475Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.475Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/plantogo-1e015/adminSdkConfig [none]
+[debug] [2026-08-11T22:26:05.963Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/plantogo-1e015/adminSdkConfig 200
+[debug] [2026-08-11T22:26:05.963Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/plantogo-1e015/adminSdkConfig {"projectId":"plantogo-1e015","storageBucket":"plantogo-1e015.firebasestorage.app"}
+[debug] [2026-08-11T22:26:05.963Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.963Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:05.963Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/plantogo-1e015/configs [none]
+[debug] [2026-08-11T22:26:06.375Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/plantogo-1e015/configs 200
+[debug] [2026-08-11T22:26:06.375Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/plantogo-1e015/configs {}
+[debug] [2026-08-11T22:26:06.376Z] Validating nodejs source
+[warn] !  functions: Runtime Node.js 20 was deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-08-11T22:26:07.217Z] > [functions] package.json contents: {
+  "name": "plantogo-functions",
+  "version": "1.0.0",
+  "description": "PlanToGo Cloud Functions for trusted server-side operations",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "private": true
+}
+[debug] [2026-08-11T22:26:07.217Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-08-11T22:26:07.218Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-11T22:26:07.224Z] Found firebase-functions binary at 'E:\Websitovi Glavni\APP\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8602
+
+[debug] [2026-08-11T22:26:07.601Z] Got response from /__/functions.yaml {"endpoints":{"createCompany":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createCompany"},"createCompanyAdmin":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createCompanyAdmin"},"createDriver":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createDriver"},"createSupervisor":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createSupervisor"},"updateUserStatus":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"updateUserStatus"},"resetDriverPassword":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"resetDriverPassword"},"initializeSuperAdmin":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"initializeSuperAdmin"},"createSuperAdmin":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createSuperAdmin"},"onUserCreate":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.create","eventFilters":{"resource":"projects/plantogo-1e015"},"retry":false},"labels":{},"entryPoint":"onUserCreate"},"createUser":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createUser"},"updateUserRole":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"updateUserRole"},"createAuditLog":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"createAuditLog"},"onTourPublished":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/plantogo-1e015/databases/(default)/documents/tours/{tourId}"},"retry":false},"labels":{},"entryPoint":"onTourPublished"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2026-08-11T22:26:10.623Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:10.623Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:10.623Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/-/functions [none]
+[debug] [2026-08-11T22:26:11.278Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/-/functions 200
+[debug] [2026-08-11T22:26:11.278Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/-/functions {}
+[debug] [2026-08-11T22:26:11.279Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:11.279Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:11.279Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/plantogo-1e015/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-08-11T22:26:12.288Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/plantogo-1e015/locations/-/functions 200
+[debug] [2026-08-11T22:26:12.288Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/plantogo-1e015/locations/-/functions {}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-08-11T22:26:12.290Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-11T22:26:12.290Z] > authorizing via signed-in user (mihoiantun715@gmail.com)
+[debug] [2026-08-11T22:26:12.290Z] [iam] checking project plantogo-1e015 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-08-11T22:26:12.290Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:12.290Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:12.290Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions [none]
+[debug] [2026-08-11T22:26:12.290Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions  x-goog-user-project=plantogo-1e015
+[debug] [2026-08-11T22:26:12.290Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-08-11T22:26:13.002Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions 200
+[debug] [2026-08-11T22:26:13.002Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-08-11T22:26:13.003Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:13.003Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:13.003Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/plantogo-1e015/instances pageSize=100&pageToken=
+[debug] [2026-08-11T22:26:13.855Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/plantogo-1e015/instances 200
+[debug] [2026-08-11T22:26:13.855Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/plantogo-1e015/instances {}
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2026-08-11T22:26:13.857Z] Attempting to merge .env secret bindings {} into declared secrets...)}
+[debug] [2026-08-11T22:26:13.857Z] createCompany declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createCompanyAdmin declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createDriver declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createSupervisor declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] updateUserStatus declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] resetDriverPassword declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] initializeSuperAdmin declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createSuperAdmin declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] onUserCreate declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createUser declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] updateUserRole declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] createAuditLog declared secrets: undefined
+[debug] [2026-08-11T22:26:13.857Z] onTourPublished declared secrets: undefined
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged E:\Websitovi Glavni\APP\functions (56.66 KB) for uploading 
+[debug] [2026-08-11T22:26:13.881Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:13.881Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:13.881Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/plantogo-1e015/databases/(default) [none]
+[debug] [2026-08-11T22:26:14.038Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/plantogo-1e015/databases/(default) 200
+[debug] [2026-08-11T22:26:14.038Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/plantogo-1e015/databases/(default) {"name":"projects/plantogo-1e015/databases/(default)","uid":"96515021-7ef0-4345-b05a-f51a79e16d9f","createTime":"2026-08-11T20:46:15.661646Z","updateTime":"2026-08-11T20:46:15.661646Z","locationId":"eur3","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-08-11T21:26:13.991875Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"e","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IJGXm6vPmZYDMIzknYK5mZYD"}
+[warn] !  functions: The following functions have triggers in different regions than they are located:
+- onTourPublished (us-central1, Trigger: eur3)
+To avoid unnecessary cross-region network hops, consider assigning these functions to their trigger regions or collocating them. To suppress this warning, set FIREBASE_SUPPRESS_REGION_WARNING=true in your environment variables. 
+[debug] [2026-08-11T22:26:14.041Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.041Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.041Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 [none]
+[debug] [2026-08-11T22:26:14.222Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 200
+[debug] [2026-08-11T22:26:14.223Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/plantogo-1e015 {"projectNumber":"624992913634","projectId":"plantogo-1e015","lifecycleState":"ACTIVE","name":"PlanToGo","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-08-11T20:23:27.931Z"}
+[debug] [2026-08-11T22:26:14.224Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.224Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.224Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/plantogo-1e015/billingInfo [none]
+[debug] [2026-08-11T22:26:14.224Z] >>> [apiv2][(partial)header] GET https://cloudbilling.googleapis.com/v1/projects/plantogo-1e015/billingInfo  x-goog-user-project=plantogo-1e015
+[debug] [2026-08-11T22:26:14.987Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/plantogo-1e015/billingInfo 200
+[debug] [2026-08-11T22:26:14.987Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/plantogo-1e015/billingInfo {"name":"projects/plantogo-1e015/billingInfo","projectId":"plantogo-1e015","billingAccountName":"billingAccounts/013EE8-F9C5E1-461E34","billingEnabled":true}
+[debug] [2026-08-11T22:26:14.988Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.988Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:14.988Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2026-08-11T22:26:14.988Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2026-08-11T22:26:15.632Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2026-08-11T22:26:15.633Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip?GoogleAccessId=service-624992913634@gcf-admin-robot.iam.gserviceaccount.com&Expires=1786488975&Signature=KcSwqZ5dlf4nu80Xxhb36hl7OkvCyBNI2%2F824iNdjv6lUTMEFj1q%2BGbhf%2FShCHD9Lz8gYL8nXroZFOTFFD%2B7DihvVC33lMhyEIFg4iU4nd1bd2SBQkWrmGbAaSmV8GfLGfse0pOLeNje07n7t3vTN5BNxit0F8FodPlIRLALud0HBh9%2BbhbirhoJNMlVHrYIIDpEK0rdTtHBtOJon2Q2Q7zWj2rw1kVetJ3Ax62D6aZmu0lZiHPA4KzaMSgATvU8%2FxFYBc5bLCED5thvXXDtVo6Y9G2Mojkn76fk5LCfhwRE8BKvP8pO8rD2YlOcpt2N0fSGx8RKFtc30r5fa0C3zg%3D%3D"}
+[debug] [2026-08-11T22:26:15.633Z] >>> [apiv2][query] PUT https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip GoogleAccessId=service-624992913634%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1786488975&Signature=KcSwqZ5dlf4nu80Xxhb36hl7OkvCyBNI2%2F824iNdjv6lUTMEFj1q%2BGbhf%2FShCHD9Lz8gYL8nXroZFOTFFD%2B7DihvVC33lMhyEIFg4iU4nd1bd2SBQkWrmGbAaSmV8GfLGfse0pOLeNje07n7t3vTN5BNxit0F8FodPlIRLALud0HBh9%2BbhbirhoJNMlVHrYIIDpEK0rdTtHBtOJon2Q2Q7zWj2rw1kVetJ3Ax62D6aZmu0lZiHPA4KzaMSgATvU8%2FxFYBc5bLCED5thvXXDtVo6Y9G2Mojkn76fk5LCfhwRE8BKvP8pO8rD2YlOcpt2N0fSGx8RKFtc30r5fa0C3zg%3D%3D
+[debug] [2026-08-11T22:26:15.633Z] >>> [apiv2][body] PUT https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip [stream]
+[debug] [2026-08-11T22:26:16.985Z] <<< [apiv2][status] PUT https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip 200
+[debug] [2026-08-11T22:26:16.986Z] <<< [apiv2][body] PUT https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip [omitted]
+[info] +  functions: functions source uploaded successfully 
+[info] i  functions: creating Node.js 20 (1st Gen) function initializeSuperAdmin(us-central1)... 
+[info] i  functions: creating Node.js 20 (1st Gen) function createSuperAdmin(us-central1)... 
+[debug] [2026-08-11T22:26:16.988Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:16.988Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:16.988Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions [none]
+[debug] [2026-08-11T22:26:16.988Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions {"name":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin","sourceUploadUrl":"https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip?GoogleAccessId=service-624992913634@gcf-admin-robot.iam.gserviceaccount.com&Expires=1786488975&Signature=KcSwqZ5dlf4nu80Xxhb36hl7OkvCyBNI2%2F824iNdjv6lUTMEFj1q%2BGbhf%2FShCHD9Lz8gYL8nXroZFOTFFD%2B7DihvVC33lMhyEIFg4iU4nd1bd2SBQkWrmGbAaSmV8GfLGfse0pOLeNje07n7t3vTN5BNxit0F8FodPlIRLALud0HBh9%2BbhbirhoJNMlVHrYIIDpEK0rdTtHBtOJon2Q2Q7zWj2rw1kVetJ3Ax62D6aZmu0lZiHPA4KzaMSgATvU8%2FxFYBc5bLCED5thvXXDtVo6Y9G2Mojkn76fk5LCfhwRE8BKvP8pO8rD2YlOcpt2N0fSGx8RKFtc30r5fa0C3zg%3D%3D","entryPoint":"initializeSuperAdmin","runtime":"nodejs20","dockerRegistry":"ARTIFACT_REGISTRY","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"0eb7c04a3103a024c949677ec0ab5ec49da3d163"},"httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"minInstances":null,"maxInstances":null,"ingressSettings":null,"environmentVariables":{"INIT_SECRET":"PlanToGo2026SecureInit_markovicmihovil1437","FIREBASE_CONFIG":"{\"projectId\":\"plantogo-1e015\",\"storageBucket\":\"plantogo-1e015.firebasestorage.app\"}","GCLOUD_PROJECT":"plantogo-1e015","EVENTARC_CLOUD_EVENT_SOURCE":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin"},"serviceAccountEmail":null,"availableMemoryMb":null,"timeout":null,"vpcConnector":null,"vpcConnectorEgressSettings":null,"buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}}
+[debug] [2026-08-11T22:26:21.066Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions 200
+[debug] [2026-08-11T22:26:21.066Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions {"name":"operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin","updateTime":"2026-08-11T22:26:20.950576434Z"}}
+[debug] [2026-08-11T22:26:21.067Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:21.067Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:21.067Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ [none]
+[debug] [2026-08-11T22:26:21.308Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ 200
+[debug] [2026-08-11T22:26:21.308Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ {"name":"operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin","updateTime":"2026-08-11T22:26:20.950576434Z"}}
+[debug] [2026-08-11T22:26:21.823Z] [create-default-us-central1-initializeSuperAdmin] Retrying task index 0
+[debug] [2026-08-11T22:26:21.823Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:21.823Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:21.823Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ [none]
+[debug] [2026-08-11T22:26:22.072Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ 200
+[debug] [2026-08-11T22:26:22.072Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ {"name":"operations/cHJvamVjdHMvcGxhbnRvZ28tMWUwMTUvbG9jYXRpb25zL3VzLWNlbnRyYWwxL29wZXJhdGlvbnMvb3BlcmF0aW9uLTE3ODY0ODcxNzcxNzctNjU4Y2NmNTk3NmFlYi04ZTZkYTAxMS0yNzRlNjkyZQ","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v1.OperationMetadataV1","target":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin","type":"CREATE_FUNCTION","request":{"@type":"type.googleapis.com/google.cloud.functions.v1.CloudFunction","name":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin","httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"entryPoint":"initializeSuperAdmin","updateTime":"1970-01-01T00:00:00Z","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"0eb7c04a3103a024c949677ec0ab5ec49da3d163"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip?GoogleAccessId=service-624992913634@gcf-admin-robot.iam.gserviceaccount.com&Expires=1786488975&Signature=KcSwqZ5dlf4nu80Xxhb36hl7OkvCyBNI2%2F824iNdjv6lUTMEFj1q%2BGbhf%2FShCHD9Lz8gYL8nXroZFOTFFD%2B7DihvVC33lMhyEIFg4iU4nd1bd2SBQkWrmGbAaSmV8GfLGfse0pOLeNje07n7t3vTN5BNxit0F8FodPlIRLALud0HBh9%2BbhbirhoJNMlVHrYIIDpEK0rdTtHBtOJon2Q2Q7zWj2rw1kVetJ3Ax62D6aZmu0lZiHPA4KzaMSgATvU8%2FxFYBc5bLCED5thvXXDtVo6Y9G2Mojkn76fk5LCfhwRE8BKvP8pO8rD2YlOcpt2N0fSGx8RKFtc30r5fa0C3zg%3D%3D","environmentVariables":{"INIT_SECRET":"PlanToGo2026SecureInit_markovicmihovil1437","FIREBASE_CONFIG":"{\"projectId\":\"plantogo-1e015\",\"storageBucket\":\"plantogo-1e015.firebasestorage.app\"}","GCLOUD_PROJECT":"plantogo-1e015","EVENTARC_CLOUD_EVENT_SOURCE":"projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin"},"runtime":"nodejs20","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRegistry":"ARTIFACT_REGISTRY"},"updateTime":"2026-08-11T22:26:21.648417496Z"},"done":true,"error":{"code":9,"message":"Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation."}}
+[debug] [2026-08-11T22:26:22.072Z] Got source token undefined for region us-central1
+[debug] [2026-08-11T22:26:22.073Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:22.073Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:22.073Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions [none]
+[debug] [2026-08-11T22:26:22.073Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions {"name":"projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin","sourceUploadUrl":"https://storage.googleapis.com/uploads-1049845582982.us-central1.cloudfunctions.appspot.com/eb1cc301-c200-43e5-a297-0fafbc0f1794.zip?GoogleAccessId=service-624992913634@gcf-admin-robot.iam.gserviceaccount.com&Expires=1786488975&Signature=KcSwqZ5dlf4nu80Xxhb36hl7OkvCyBNI2%2F824iNdjv6lUTMEFj1q%2BGbhf%2FShCHD9Lz8gYL8nXroZFOTFFD%2B7DihvVC33lMhyEIFg4iU4nd1bd2SBQkWrmGbAaSmV8GfLGfse0pOLeNje07n7t3vTN5BNxit0F8FodPlIRLALud0HBh9%2BbhbirhoJNMlVHrYIIDpEK0rdTtHBtOJon2Q2Q7zWj2rw1kVetJ3Ax62D6aZmu0lZiHPA4KzaMSgATvU8%2FxFYBc5bLCED5thvXXDtVo6Y9G2Mojkn76fk5LCfhwRE8BKvP8pO8rD2YlOcpt2N0fSGx8RKFtc30r5fa0C3zg%3D%3D","entryPoint":"createSuperAdmin","runtime":"nodejs20","dockerRegistry":"ARTIFACT_REGISTRY","labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"0eb7c04a3103a024c949677ec0ab5ec49da3d163"},"httpsTrigger":{"securityLevel":"SECURE_ALWAYS"},"minInstances":null,"maxInstances":null,"ingressSettings":null,"environmentVariables":{"INIT_SECRET":"PlanToGo2026SecureInit_markovicmihovil1437","FIREBASE_CONFIG":"{\"projectId\":\"plantogo-1e015\",\"storageBucket\":\"plantogo-1e015.firebasestorage.app\"}","GCLOUD_PROJECT":"plantogo-1e015","EVENTARC_CLOUD_EVENT_SOURCE":"projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin"},"serviceAccountEmail":null,"availableMemoryMb":null,"timeout":null,"vpcConnector":null,"vpcConnectorEgressSettings":null,"buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}}
+[error] Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.
+[debug] [2026-08-11T22:26:22.677Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions 400
+[debug] [2026-08-11T22:26:22.677Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions {"error":{"code":400,"message":"Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.","status":"FAILED_PRECONDITION"}}
+[warn] !  functions: failed to create function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin 
+[error] Failed to create function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin
+[warn] !  functions: Deploys failed. Skipping deletes. 
+[debug] [2026-08-11T22:26:22.683Z] Total Function Deployment time: 5691
+[debug] [2026-08-11T22:26:22.683Z] 2 Functions Deployed
+[debug] [2026-08-11T22:26:22.683Z] 2 Functions Errored
+[debug] [2026-08-11T22:26:22.683Z] 0 Function Deployments Aborted
+[debug] [2026-08-11T22:26:22.683Z] Average Function Deployment time: 5387.5
+[info] 
+[info] Functions deploy had errors with the following functions:
+	createSuperAdmin(us-central1)
+	initializeSuperAdmin(us-central1)
+[debug] [2026-08-11T22:26:22.827Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:22.827Z] Checked if tokens are valid: true, expires at: 1786488247826
+[debug] [2026-08-11T22:26:22.827Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2026-08-11T22:26:23.681Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/repositories/gcf-artifacts 404
+[debug] [2026-08-11T22:26:23.681Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/repositories/gcf-artifacts {"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}}
+[debug] [2026-08-11T22:26:23.681Z] Failed to check artifact cleanup policy for region us-central1: Request to https://artifactregistry.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found. {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://artifactregistry.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found.","status":404}
+[debug] [2026-08-11T22:26:23.682Z] Functions deploy failed.
+[debug] [2026-08-11T22:26:23.682Z] {
+  "endpoint": {
+    "id": "initializeSuperAdmin",
+    "project": "plantogo-1e015",
+    "region": "us-central1",
+    "entryPoint": "initializeSuperAdmin",
+    "platform": "gcfv1",
+    "runtime": "nodejs20",
+    "callableTrigger": {},
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "vpc": null,
+    "environmentVariables": {
+      "INIT_SECRET": "PlanToGo2026SecureInit_markovicmihovil1437",
+      "FIREBASE_CONFIG": "{\"projectId\":\"plantogo-1e015\",\"storageBucket\":\"plantogo-1e015.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "plantogo-1e015",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin"
+    },
+    "codebase": "default",
+    "targetedByOnly": true,
+    "hash": "0eb7c04a3103a024c949677ec0ab5ec49da3d163"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "exit": 1,
+    "message": "Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.",
+    "original": {
+      "code": 9,
+      "message": "Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/initializeSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation."
+    },
+    "status": 9,
+    "code": 9
+  }
+}
+[debug] [2026-08-11T22:26:23.682Z] {
+  "endpoint": {
+    "id": "createSuperAdmin",
+    "project": "plantogo-1e015",
+    "region": "us-central1",
+    "entryPoint": "createSuperAdmin",
+    "platform": "gcfv1",
+    "runtime": "nodejs20",
+    "callableTrigger": {},
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "vpc": null,
+    "environmentVariables": {
+      "INIT_SECRET": "PlanToGo2026SecureInit_markovicmihovil1437",
+      "FIREBASE_CONFIG": "{\"projectId\":\"plantogo-1e015\",\"storageBucket\":\"plantogo-1e015.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "plantogo-1e015",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin"
+    },
+    "codebase": "default",
+    "targetedByOnly": true,
+    "hash": "0eb7c04a3103a024c949677ec0ab5ec49da3d163"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v1/projects/plantogo-1e015/locations/us-central1/functions had HTTP Error: 400, Failed to create 1st Gen function projects/plantogo-1e015/locations/us-central1/functions/createSuperAdmin: Default service account '624992913634-compute@developer.gserviceaccount.com' doesn't exist. Please recreate this account or specify a different account. Please visit https://cloud.google.com/functions/docs/troubleshooting for in-depth troubleshooting documentation.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[error] Error: There was an error deploying functions:
+[error] - Error Failed to create function initializeSuperAdmin in region us-central1
+[error] - Error Failed to create function createSuperAdmin in region us-central1

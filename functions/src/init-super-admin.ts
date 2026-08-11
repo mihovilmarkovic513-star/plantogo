@@ -38,11 +38,11 @@ export const initializeSuperAdmin = functions.https.onCall(async (data, context)
   }
 
   // Verify initialization secret
-  const expectedSecret = functions.config().init?.secret;
+  const expectedSecret = process.env.INIT_SECRET;
   if (!expectedSecret) {
     throw new functions.https.HttpsError(
       'failed-precondition',
-      'Initialization secret not configured. Set with: firebase functions:config:set init.secret="YOUR_SECRET"'
+      'Initialization secret not configured. Set INIT_SECRET environment variable.'
     );
   }
 

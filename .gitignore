@@ -30,8 +30,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# local env files
+.env*.local
+.env
+
+# Firebase service account keys (NEVER commit these)
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Super Admin setup script (delete after use)
+create-super-admin.js
 
 # vercel
 .vercel
