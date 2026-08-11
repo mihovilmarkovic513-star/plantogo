@@ -1,32 +1,86 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/client';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
   const router = useRouter();
+  const [identifier, setIdentifier] = useState(''); // Can be username or email
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  async function handleSubmit(e: FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+    setError('');
 
     try {
-      await signIn(email, password);
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+      const auth = getFirebaseAuth();
+      const db = getFirebaseFirestore();
+      
+      let emailToUse = identifier;
+      
+      // Check if identifier is a username (no @ symbol)
+      if (!identifier.includes('@')) {
+        // Look up username in usernames collection
+        const usernameDoc = await getDoc(doc(db, 'usernames', identifier));
+        
+        if (!usernameDoc.exists()) {
+          setError('Invalid username or password');
+          setLoading(false);
+          return;
+        }
+        
+        const userId = usernameDoc.data().userId;
+        
+        // Get user document to find email
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        
+        if (!userDoc.exists()) {
+          setError('Invalid username or password');
+          setLoading(false);
+          return;
+        }
+        
+        emailToUse = userDoc.data().email;
+        
+        if (!emailToUse) {
+          setError('Invalid username or password');
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Sign in with email and password
+      await signInWithEmailAndPassword(auth, emailToUse, password);
+      
+      // Get user's custom claims to determine redirect
+      const user = auth.currentUser;
+      if (user) {
+        const idTokenResult = await user.getIdTokenResult();
+        const role = idTokenResult.claims.role;
+        
+        // Redirect based on role
+        if (role === 'SUPER_ADMIN') {
+          router.push('/admin');
+        } else if (role === 'COMPANY_ADMIN') {
+          router.push('/company');
+        } else if (role === 'SUPERVISOR') {
+          router.push('/supervisor');
+        } else {
+          router.push('/dashboard');
+        }
+      }
+    } catch (err: any) {
       console.error('Login error:', err);
-    } finally {
+      setError('Invalid username or password');
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -47,18 +101,18 @@ export default function LoginPage() {
           )}
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-2">
+                Username or Email
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                type="text"
+                id="identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter your username or email"
+                disabled={loading}
               />
             </div>
             <div>
