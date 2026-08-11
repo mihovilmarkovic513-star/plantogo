@@ -25,9 +25,16 @@ export interface UserProfile {
   lastLogin?: Date;
 }
 
+export interface CustomClaims {
+  role: UserRole;
+  companyId: string | null;
+  active: boolean;
+}
+
 export interface AuthUser {
   uid: string;
   email: string | null;
+  displayName: string | null;
   role: UserRole;
   companyId: string | null;
   active: boolean;

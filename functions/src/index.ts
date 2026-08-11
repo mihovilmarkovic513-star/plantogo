@@ -8,6 +8,16 @@ import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 
+// Phase 1: Company and User Management Functions
+export {
+  createCompany,
+  createCompanyAdmin,
+  createDriver,
+  createSupervisor,
+  updateUserStatus,
+  resetDriverPassword,
+} from './phase1-functions';
+
 /**
  * User Roles
  */

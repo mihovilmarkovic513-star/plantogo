@@ -1,0 +1,56 @@
+# Vercel Environment Variables - Exact Values
+# Copy these values to Vercel Dashboard → Settings → Environment Variables
+
+## Public Variables (Client-Side)
+
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDL2uMXU4D5ii5MhFs_SYoESsfgY4Hz3nw
+
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=plantogo-1e015.firebaseapp.com
+
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=plantogo-1e015
+
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=plantogo-1e015.firebasestorage.app
+
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=624992913634
+
+NEXT_PUBLIC_FIREBASE_APP_ID=1:624992913634:web:768331851e286231a0b6bb
+
+## Secret Variables (Server-Side Only)
+
+FIREBASE_PROJECT_ID=plantogo-1e015
+
+# TODO: Get these from Firebase Console → Service Accounts → Generate Private Key
+FIREBASE_CLIENT_EMAIL=[Get from service account JSON]
+
+FIREBASE_PRIVATE_KEY=[Get from service account JSON - keep the \n characters]
+
+---
+
+## How to Add to Vercel
+
+1. Go to: https://vercel.com/dashboard
+2. Select project: plantogo
+3. Go to: Settings → Environment Variables
+4. Add each variable above:
+   - Key: Variable name (e.g., NEXT_PUBLIC_FIREBASE_API_KEY)
+   - Value: The value shown above
+   - Environment: Select all (Production, Preview, Development)
+5. Click "Save" for each
+6. Redeploy: Deployments → Latest → Redeploy
+
+## Service Account Credentials
+
+To get FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY:
+
+1. Go to: https://console.firebase.google.com/project/plantogo-1e015/settings/serviceaccounts/adminsdk
+2. Click "Generate new private key"
+3. Download the JSON file
+4. Copy values:
+   - client_email → FIREBASE_CLIENT_EMAIL
+   - private_key → FIREBASE_PRIVATE_KEY (keep the \n characters exactly as they are)
+
+## After Adding Variables
+
+Redeploy the project for changes to take effect:
+- Vercel Dashboard → Deployments → Click "..." → Redeploy
+- OR push a new commit to trigger auto-deployment
