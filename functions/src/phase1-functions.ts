@@ -140,11 +140,13 @@ export const createCompanyAdmin = functions.region(region).https.onCall(async (d
     throw new functions.https.HttpsError('permission-denied', 'Only SUPER_ADMIN can create Company Admins');
   }
 
-  const { companyId, email, firstName, lastName, phone, temporaryPassword } = data;
+  const { companyId, email, firstName, lastName, phone } = data;
 
-  if (!companyId || !email || !firstName || !lastName || !phone || !temporaryPassword) {
+  if (!companyId || !email || !firstName || !lastName) {
     throw new functions.https.HttpsError('invalid-argument', 'Missing required fields');
   }
+
+  const temporaryPassword = generateTemporaryPassword();
 
   try {
     // Verify company exists
@@ -195,7 +197,7 @@ export const createCompanyAdmin = functions.region(region).https.onCall(async (d
       { email, firstName, lastName }
     );
 
-    return { userId: userRecord.uid };
+    return { userId: userRecord.uid, temporaryPassword };
   } catch (error) {
     functions.logger.error('Error creating Company Admin:', error);
     throw new functions.https.HttpsError('internal', 'Failed to create Company Admin');
