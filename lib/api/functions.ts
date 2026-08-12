@@ -2,7 +2,8 @@
  * Cloud Functions API Client
  */
 
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
+import { getFirebaseFunctions } from '@/lib/firebase/client';
 import { initializeFirebase } from '@/lib/firebase/client';
 import type {
   CreateCompanyAdminInput,
@@ -17,7 +18,7 @@ import type { CreateCompanyInput } from '@/lib/types/company';
 
 // Initialize Firebase
 initializeFirebase();
-const functions = getFunctions();
+const functions = getFirebaseFunctions();
 
 /**
  * Create Company (SUPER_ADMIN only)
