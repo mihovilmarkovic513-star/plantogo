@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { getFirebaseFirestore } from '@/lib/firebase/client';
 import { DeliveryOrder, DeliveryOrderStatus, ServiceLevelLabels, DeliveryItem } from '@/lib/types/order';
 import { Customer, CustomerType } from '@/lib/types/customer';
@@ -148,9 +148,29 @@ export default function OrderDetailPage() {
               Delivery order details
             </p>
           </div>
-          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-            {order.status}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
+              {order.status}
+            </span>
+            {order.status === DeliveryOrderStatus.DRAFT && (
+              <button
+                onClick={() => updateStatus(DeliveryOrderStatus.PLANNED)}
+                disabled={updating}
+                className="bg-blue-600 text-white px-4 py-1 rounded-md hover:bg-blue-700 text-sm disabled:bg-gray-400"
+              >
+                Mark as Planned
+              </button>
+            )}
+            {(order.status === DeliveryOrderStatus.DRAFT || order.status === DeliveryOrderStatus.PLANNED) && (
+              <button
+                onClick={() => updateStatus(DeliveryOrderStatus.CANCELLED)}
+                disabled={updating}
+                className="bg-red-600 text-white px-4 py-1 rounded-md hover:bg-red-700 text-sm disabled:bg-gray-400"
+              >
+                Cancel Order
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
