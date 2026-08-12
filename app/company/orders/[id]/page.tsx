@@ -18,6 +18,7 @@ export default function OrderDetailPage() {
   const [items, setItems] = useState<DeliveryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     loadOrder();
@@ -72,6 +73,26 @@ export default function OrderDetailPage() {
       setError('Failed to load order');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function updateStatus(newStatus: DeliveryOrderStatus) {
+    if (!order) return;
+    
+    setUpdating(true);
+    try {
+      const db = getFirebaseFirestore();
+      await updateDoc(doc(db, 'deliveryOrders', order.orderId), {
+        status: newStatus,
+        updatedAt: new Date(),
+      });
+      
+      setOrder({ ...order, status: newStatus });
+      alert(`Order status updated to ${newStatus}`);
+    } catch (error: any) {
+      alert('Failed to update status: ' + error.message);
+    } finally {
+      setUpdating(false);
     }
   }
 
