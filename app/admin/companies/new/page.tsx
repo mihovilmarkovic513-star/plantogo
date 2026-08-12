@@ -27,8 +27,10 @@ export default function NewCompanyPage() {
     setError('');
 
     try {
-      const result = await createCompany(formData);
-      router.push(`/admin/companies/${result.companyId}`);
+      const functions = getFirebaseFunctions();
+      const createCompanyFn = httpsCallable(functions, 'createCompany');
+      const result = await createCompanyFn(formData);
+      router.push(`/admin/companies/${(result.data as any).companyId}`);
     } catch (err: any) {
       setError(err.message || 'Failed to create company');
       setLoading(false);

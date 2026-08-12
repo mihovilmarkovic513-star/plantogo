@@ -69,6 +69,16 @@ export function getFirebaseStorage(): FirebaseStorage {
   return storage;
 }
 
+/**
+ * Get Firebase Functions instance (EU region)
+ */
+export function getFirebaseFunctions(): Functions {
+  if (!functions) {
+    initializeFirebase();
+  }
+  return functions;
+}
+
 // Initialize on import
 if (typeof window !== 'undefined') {
   initializeFirebase();
