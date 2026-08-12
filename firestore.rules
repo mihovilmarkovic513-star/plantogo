@@ -197,6 +197,15 @@ service cloud.firestore {
       allow delete: if request.auth.uid == resource.data.userId;
     }
     
+    // Phase 2A Collections - All writes via Cloud Functions only
+    
+    // Customers collection
+    match /customers/{customerId} {
+      allow read: if request.auth != null && 
+                     request.auth.token.companyId == resource.data.companyId;
+      allow write: if false; // Only Cloud Functions can write
+    }
+    
     // Delivery Orders collection - company-scoped access
     match /deliveryOrders/{orderId} {
       allow read: if request.auth != null && 

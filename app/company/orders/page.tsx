@@ -29,7 +29,13 @@ export default function OrdersPage() {
         orderBy('plannedDeliveryDate', 'desc')
       );
 
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(q).catch(err => {
+        // If permission error on empty collection, return empty result
+        if (err.code === 'permission-denied') {
+          return { docs: [] };
+        }
+        throw err;
+      });
       const ordersData = await Promise.all(
         snapshot.docs.map(async (orderDoc) => {
           const orderData = {
