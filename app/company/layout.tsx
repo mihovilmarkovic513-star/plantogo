@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link'; // Added missing Link import
 import { useEffect } from 'react';
 import { UserRole } from '@/lib/types/auth';
 
