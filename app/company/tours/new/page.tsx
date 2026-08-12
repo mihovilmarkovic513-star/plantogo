@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs, doc, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { getFirebaseFirestore } from '@/lib/firebase/client';
 import { DeliveryOrder, DeliveryOrderStatus } from '@/lib/types/order';
 import { TourStatus } from '@/lib/types/tour';
@@ -74,6 +74,7 @@ export default function NewTourPage() {
       const db = getFirebaseFirestore();
       const tourRef = doc(collection(db, 'tours'));
       
+      // Create tour document
       await setDoc(tourRef, {
         tourId: tourRef.id,
         companyId: user?.companyId,
@@ -86,6 +87,43 @@ export default function NewTourPage() {
         updatedAt: Timestamp.now(),
         createdBy: user?.uid,
       });
+
+      // Create delivery stops for each selected order
+      let sequence = 1;
+      for (const orderId of selectedOrderIds) {
+        const order = availableOrders.find(o => o.orderId === orderId);
+        if (!order) continue;
+
+        // Get customer data
+        const customerDoc = await getDoc(doc(db, 'customers', order.customerId));
+        const customerData = customerDoc.data();
+
+        const stopRef = doc(collection(db, 'tours', tourRef.id, 'stops'));
+        await setDoc(stopRef, {
+          stopId: stopRef.id,
+          tourId: tourRef.id,
+          companyId: user?.companyId,
+          sequence,
+          type: 'DELIVERY',
+          status: 'PENDING',
+          orderId: order.orderId,
+          customerId: order.customerId,
+          location: {
+            name: customerData?.companyName || `${customerData?.firstName} ${customerData?.lastName}`,
+            street: customerData?.deliveryAddress?.street || '',
+            houseNumber: customerData?.deliveryAddress?.houseNumber || '',
+            postalCode: customerData?.deliveryAddress?.postalCode || '',
+            city: customerData?.deliveryAddress?.city || '',
+            country: customerData?.deliveryAddress?.country || 'Germany',
+            latitude: customerData?.deliveryAddress?.latitude || null,
+            longitude: customerData?.deliveryAddress?.longitude || null,
+          },
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        });
+        
+        sequence++;
+      }
 
       router.push(`/company/tours/${tourRef.id}`);
     } catch (err: any) {

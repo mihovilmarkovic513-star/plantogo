@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 import { getFirebaseFirestore } from '@/lib/firebase/client';
 import { Tour, TourStatus, TourStatusLabels } from '@/lib/types/tour';
-import { DeliveryOrder } from '@/lib/types/order';
+import { TourStop, TourStopType, TourStopStatusLabels } from '@/lib/types/tour-stop';
+import { DeliveryOrder, ServiceLevelLabels } from '@/lib/types/order';
 import Link from 'next/link';
 
 interface Driver {
@@ -21,10 +22,11 @@ export default function TourDetailPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState<Tour | null>(null);
-  const [orders, setOrders] = useState<DeliveryOrder[]>([]);
+  const [stops, setStops] = useState<TourStop[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedDriverId, setSelectedDriverId] = useState('');
   const [assigning, setAssigning] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   useEffect(() => {
     loadTourData();
@@ -53,22 +55,19 @@ export default function TourDetailPage() {
       setTour(tourData);
       setSelectedDriverId(tourData.driverId || '');
 
-      // Load orders
-      if (tourData.orderIds && tourData.orderIds.length > 0) {
-        const ordersPromises = tourData.orderIds.map(orderId =>
-          getDoc(doc(db, 'deliveryOrders', orderId))
-        );
-        const orderDocs = await Promise.all(ordersPromises);
-        const ordersData = orderDocs
-          .filter(d => d.exists())
-          .map(d => ({
-            ...d.data(),
-            plannedDeliveryDate: d.data().plannedDeliveryDate?.toDate() || new Date(),
-            createdAt: d.data().createdAt?.toDate() || new Date(),
-            updatedAt: d.data().updatedAt?.toDate() || new Date(),
-          })) as DeliveryOrder[];
-        setOrders(ordersData);
-      }
+      // Load tour stops
+      const stopsQuery = query(
+        collection(db, 'tours', params.id as string, 'stops'),
+        orderBy('sequence', 'asc')
+      );
+      const stopsSnapshot = await getDocs(stopsQuery);
+      const stopsData = stopsSnapshot.docs.map(doc => ({
+        ...doc.data(),
+        plannedArrivalTime: doc.data().plannedArrivalTime?.toDate(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      })) as TourStop[];
+      setStops(stopsData);
     } catch (error) {
       console.error('Error loading tour:', error);
     } finally {
@@ -139,6 +138,43 @@ export default function TourDetailPage() {
     }
   }
 
+  async function reorderStop(stopId: string, direction: 'up' | 'down') {
+    if (!tour || reordering) return;
+    
+    setReordering(true);
+    try {
+      const db = getFirebaseFirestore();
+      const stopIndex = stops.findIndex(s => s.stopId === stopId);
+      if (stopIndex === -1) return;
+      
+      const targetIndex = direction === 'up' ? stopIndex - 1 : stopIndex + 1;
+      if (targetIndex < 0 || targetIndex >= stops.length) {
+        setReordering(false);
+        return;
+      }
+      
+      const currentStop = stops[stopIndex];
+      const targetStop = stops[targetIndex];
+      
+      // Swap sequences
+      await updateDoc(doc(db, 'tours', tour.tourId, 'stops', currentStop.stopId), {
+        sequence: targetStop.sequence,
+        updatedAt: Timestamp.now(),
+      });
+      
+      await updateDoc(doc(db, 'tours', tour.tourId, 'stops', targetStop.stopId), {
+        sequence: currentStop.sequence,
+        updatedAt: Timestamp.now(),
+      });
+      
+      await loadTourData();
+    } catch (error: any) {
+      alert('Failed to reorder stop: ' + error.message);
+    } finally {
+      setReordering(false);
+    }
+  }
+
   if (loading) {
     return <div className="p-6">Loading tour...</div>;
   }
@@ -174,8 +210,8 @@ export default function TourDetailPage() {
                 <p className="text-gray-900">{tour.plannedDate.toLocaleDateString()}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Orders</label>
-                <p className="text-gray-900">{orders.length} order(s)</p>
+                <label className="text-sm font-medium text-gray-500">Stops</label>
+                <p className="text-gray-900">{stops.length} stop(s)</p>
               </div>
               {tour.notes && (
                 <div className="col-span-2">
@@ -187,27 +223,64 @@ export default function TourDetailPage() {
           </div>
 
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Orders in Tour ({orders.length})</h2>
-            {orders.length === 0 ? (
-              <p className="text-gray-500">No orders in this tour</p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Route / Stops ({stops.length})</h2>
+            {stops.length === 0 ? (
+              <p className="text-gray-500">No stops in this tour</p>
             ) : (
               <div className="space-y-3">
-                {orders.map(order => (
-                  <Link
-                    key={order.orderId}
-                    href={`/company/orders/${order.orderId}`}
-                    className="block p-4 border border-gray-200 rounded-md hover:bg-gray-50"
+                {stops.map((stop, index) => (
+                  <div
+                    key={stop.stopId}
+                    className="p-4 border border-gray-200 rounded-md"
                   >
-                    <div className="flex justify-between">
-                      <div>
-                        <div className="font-medium text-gray-900">Order #{order.orderId.slice(-8)}</div>
-                        <div className="text-sm text-gray-500">
-                          Delivery: {order.plannedDeliveryDate.toLocaleDateString()}
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-2xl font-bold text-gray-400">{stop.sequence}</span>
+                          <span className={`px-2 py-1 text-xs font-semibold rounded ${
+                            stop.type === TourStopType.PICKUP 
+                              ? 'bg-purple-100 text-purple-800' 
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {stop.type}
+                          </span>
+                          <span className="px-2 py-1 text-xs font-semibold rounded bg-gray-100 text-gray-800">
+                            {TourStopStatusLabels[stop.status]}
+                          </span>
+                        </div>
+                        <div className="ml-12">
+                          <div className="font-medium text-gray-900">{stop.location.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {stop.location.street} {stop.location.houseNumber}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {stop.location.postalCode} {stop.location.city}
+                          </div>
+                          {stop.type === TourStopType.PICKUP && stop.orderIds && (
+                            <div className="text-sm text-gray-500 mt-1">
+                              {stop.orderIds.length} order(s)
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="text-sm text-blue-600">View →</div>
+                      <div className="flex flex-col gap-2">
+                        <button
+                          onClick={() => reorderStop(stop.stopId, 'up')}
+                          disabled={index === 0 || reordering}
+                          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          ↑ Up
+                        </button>
+                        <button
+                          onClick={() => reorderStop(stop.stopId, 'down')}
+                          disabled={index === stops.length - 1 || reordering}
+                          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          ↓ Down
+                        </button>
+                      </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
