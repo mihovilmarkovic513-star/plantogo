@@ -53,25 +53,38 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
                 >
                   Dashboard
                 </a>
-                <a
                   href="/company/customers"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Customers
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/company/orders"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  className={`block px-4 py-2 rounded-md ${
+                    router.pathname.startsWith('/company/orders')
+                      ? 'bg-blue-700 text-white'
+                      : 'text-blue-100 hover:bg-blue-700'
+                  }`}
                 >
                   Orders
-                </a>
-                <a
+                </Link>
+                <Link
+                  href="/company/tours"
+                  className={`block px-4 py-2 rounded-md ${
+                    router.pathname.startsWith('/company/tours')
+                      ? 'bg-blue-700 text-white'
+                      : 'text-blue-100 hover:bg-blue-700'
+                  }`}
+                >
+                  Tours
+                </Link>
+                <Link
                   href="/company/supervisors"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Supervisors
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/company/drivers"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
