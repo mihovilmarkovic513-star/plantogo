@@ -15,74 +15,58 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState<Company | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddAdminModal, setShowAddAdminModal] = useState(false);
-  const [adminFormData, setAdminFormData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
-  const [adminLoading, setAdminLoading] = useState(false);
-  const [adminError, setAdminError] = useState('');
-  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
 
   async function loadCompanyData() {
-      try {
-        const db = getFirebaseFirestore();
-        
-        // Load company
-        const companyDoc = await getDoc(doc(db, 'companies', companyId));
-        if (companyDoc.exists()) {
-          setCompany({
-            ...companyDoc.data(),
-            createdAt: companyDoc.data().createdAt?.toDate() || new Date(),
-            updatedAt: companyDoc.data().updatedAt?.toDate() || new Date(),
-          } as Company);
-        }
-
-        // Load company users
-        const usersQuery = query(collection(db, 'users'), where('companyId', '==', companyId));
-        const usersSnapshot = await getDocs(usersQuery);
-        const usersData = usersSnapshot.docs.map(doc => ({
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date(),
-          updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as User[];
-        
-        setUsers(usersData);
-      } catch (error) {
-        console.error('Error loading company:', error);
-      } finally {
-        setLoading(false);
+    try {
+      const db = getFirebaseFirestore();
+      const companyDoc = await getDoc(doc(db, 'companies', companyId));
+      if (companyDoc.exists()) {
+        setCompany({
+          ...companyDoc.data(),
+          createdAt: companyDoc.data().createdAt?.toDate() || new Date(),
+          updatedAt: companyDoc.data().updatedAt?.toDate() || new Date(),
+        } as Company);
       }
+      const usersQuery = query(collection(db, 'users'), where('companyId', '==', companyId));
+      const usersSnapshot = await getDocs(usersQuery);
+      const usersData = usersSnapshot.docs.map(doc => ({
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      })) as User[];
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error loading company:', error);
+    } finally {
+      setLoading(false);
     }
-
-    loadCompanyData();
   }
 
   useEffect(() => {
     loadCompanyData();
   }, [companyId]);
 
-  async function handleCreateCompanyAdmin(e: React.FormEvent) {
+  async function handleCreateAdmin(e: React.FormEvent) {
     e.preventDefault();
-    setAdminLoading(true);
-    setAdminError('');
-    setGeneratedPassword('');
+    setSubmitting(true);
+    setError('');
+    setPassword('');
     try {
       const functions = getFirebaseFunctions();
-      const createCompanyAdminFn = httpsCallable(functions, 'createCompanyAdmin');
-      const result = await createCompanyAdminFn({ companyId, ...adminFormData });
-      setGeneratedPassword((result.data as any).temporaryPassword);
+      const createFn = httpsCallable(functions, 'createCompanyAdmin');
+      const result = await createFn({ companyId, ...formData });
+      setPassword((result.data as any).temporaryPassword);
       await loadCompanyData();
-      setAdminFormData({ firstName: '', lastName: '', email: '', phone: '' });
+      setFormData({ firstName: '', lastName: '', email: '', phone: '' });
     } catch (err: any) {
-      setAdminError(err.message || 'Failed to create Company Admin');
-      setAdminLoading(false);
+      setError(err.message || 'Failed to create Company Admin');
+      setSubmitting(false);
     }
-  }
-
-  function handleCloseModal() {
-    setShowAddAdminModal(false);
-    setAdminFormData({ firstName: '', lastName: '', email: '', phone: '' });
-    setAdminError('');
-    setGeneratedPassword('');
-    setAdminLoading(false);
   }
 
   if (loading) {
@@ -161,7 +145,7 @@ export default function CompanyDetailPage() {
           <div className="px-4 py-5 sm:px-6">
             <div className="flex justify-between items-center mb-3">
               <h4 className="text-sm font-medium text-gray-900">Company Admins ({companyAdmins.length})</h4>
-              <button onClick={() => setShowAddAdminModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">+ Add Company Admin</button>
+              <button onClick={() => setShowModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">+ Add Company Admin</button>
             </div>
             {companyAdmins.length > 0 ? (
               <ul className="divide-y divide-gray-200">
@@ -241,12 +225,12 @@ export default function CompanyDetailPage() {
           </div>
         </div>
       </div>
-      {showAddAdminModal && (
+      {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Add Company Admin</h2>
             <p className="text-sm text-gray-600 mb-6">Company: <strong>{company?.companyName}</strong></p>
-            {generatedPassword ? (
+            {password ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-green-800 mb-2">✅ Company Admin Created!</h3>
                 <div className="bg-yellow-50 border border-yellow-300 rounded p-4 mb-4">
@@ -254,37 +238,37 @@ export default function CompanyDetailPage() {
                   <p className="text-sm text-yellow-700 mb-3">This temporary password will only be shown ONCE.</p>
                   <div className="bg-white border border-gray-300 rounded p-3">
                     <p className="text-xs text-gray-600 mb-1">Temporary Password:</p>
-                    <p className="text-lg font-mono font-bold text-gray-900 break-all">{generatedPassword}</p>
+                    <p className="text-lg font-mono font-bold text-gray-900 break-all">{password}</p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-700 mb-4">The Company Admin can log in using their <strong>email</strong> and this password.</p>
-                <button onClick={handleCloseModal} className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Close</button>
+                <button onClick={() => { setShowModal(false); setPassword(''); setSubmitting(false); }} className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Close</button>
               </div>
             ) : (
-              <form onSubmit={handleCreateCompanyAdmin}>
-                {adminError && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{adminError}</div>}
+              <form onSubmit={handleCreateAdmin}>
+                {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
-                    <input type="text" required value={adminFormData.firstName} onChange={e => setAdminFormData({...adminFormData, firstName: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={adminLoading} />
+                    <input type="text" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={submitting} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
-                    <input type="text" required value={adminFormData.lastName} onChange={e => setAdminFormData({...adminFormData, lastName: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={adminLoading} />
+                    <input type="text" required value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={submitting} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                    <input type="email" required value={adminFormData.email} onChange={e => setAdminFormData({...adminFormData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={adminLoading} placeholder="admin@example.com" />
+                    <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={submitting} placeholder="admin@example.com" />
                     <p className="text-xs text-gray-500 mt-1">The Company Admin will use this email to log in.</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input type="tel" value={adminFormData.phone} onChange={e => setAdminFormData({...adminFormData, phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={adminLoading} placeholder="+1234567890" />
+                    <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" disabled={submitting} placeholder="+1234567890" />
                   </div>
                 </div>
                 <div className="mt-6 flex gap-3">
-                  <button type="button" onClick={handleCloseModal} className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" disabled={adminLoading}>Cancel</button>
-                  <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50" disabled={adminLoading}>{adminLoading ? 'Creating...' : 'Create Company Admin'}</button>
+                  <button type="button" onClick={() => { setShowModal(false); setError(''); setFormData({ firstName: '', lastName: '', email: '', phone: '' }); }} className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300" disabled={submitting}>Cancel</button>
+                  <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50" disabled={submitting}>{submitting ? 'Creating...' : 'Create Company Admin'}</button>
                 </div>
                 <p className="text-xs text-gray-500 mt-4">* A secure temporary password will be generated automatically.</p>
               </form>
