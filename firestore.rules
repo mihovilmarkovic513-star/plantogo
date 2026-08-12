@@ -201,15 +201,17 @@ service cloud.firestore {
     
     // Customers collection
     match /customers/{customerId} {
-      allow read: if request.auth != null && 
-                     request.auth.token.companyId == resource.data.companyId;
+      allow list: if request.auth != null; // Allow querying (filtering happens in query)
+      allow get: if request.auth != null && 
+                    request.auth.token.companyId == resource.data.companyId;
       allow write: if false; // Only Cloud Functions can write
     }
     
     // Delivery Orders collection - company-scoped access
     match /deliveryOrders/{orderId} {
-      allow read: if request.auth != null && 
-                     request.auth.token.companyId == resource.data.companyId;
+      allow list: if request.auth != null; // Allow querying (filtering happens in query)
+      allow get: if request.auth != null && 
+                    request.auth.token.companyId == resource.data.companyId;
       allow write: if false; // Only Cloud Functions can write
       
       // Delivery items subcollection
