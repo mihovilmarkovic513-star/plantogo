@@ -160,12 +160,6 @@ service cloud.firestore {
       allow update, delete: if false; // Signatures are immutable
     }
     
-    // Customers Collection
-    match /customers/{customerId} {
-      allow read: if isSuperAdmin() || belongsToCompany(resource.data.companyId);
-      allow write: if isSuperAdmin() || isCompanyAdmin(resource.data.companyId);
-    }
-    
     // Tours Collection
     match /tours/{tourId} {
       allow read: if isSuperAdmin() || 
