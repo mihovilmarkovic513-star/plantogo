@@ -6,6 +6,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+// Configure for EU region
+const region = 'europe-west1';
+
 const db = admin.firestore();
 const auth = admin.auth();
 
@@ -67,7 +70,7 @@ async function createAuditLog(
  * Create Company
  * Auth: SUPER_ADMIN only
  */
-export const createCompany = functions.https.onCall(async (data, context) => {
+export const createCompany = functions.region(region).https.onCall(async (data, context) => {
   // Verify authentication
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
@@ -128,7 +131,7 @@ export const createCompany = functions.https.onCall(async (data, context) => {
  * Create Company Admin
  * Auth: SUPER_ADMIN only
  */
-export const createCompanyAdmin = functions.https.onCall(async (data, context) => {
+export const createCompanyAdmin = functions.region(region).https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
@@ -203,7 +206,7 @@ export const createCompanyAdmin = functions.https.onCall(async (data, context) =
  * Create Driver
  * Auth: COMPANY_ADMIN only
  */
-export const createDriver = functions.https.onCall(async (data, context) => {
+export const createDriver = functions.region(region).https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
@@ -313,7 +316,7 @@ export const createDriver = functions.https.onCall(async (data, context) => {
  * Create Supervisor
  * Auth: COMPANY_ADMIN only
  */
-export const createSupervisor = functions.https.onCall(async (data, context) => {
+export const createSupervisor = functions.region(region).https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
@@ -393,7 +396,7 @@ export const createSupervisor = functions.https.onCall(async (data, context) => 
  * Update User Status (Activate/Deactivate)
  * Auth: SUPER_ADMIN or COMPANY_ADMIN (own company only)
  */
-export const updateUserStatus = functions.https.onCall(async (data, context) => {
+export const updateUserStatus = functions.region(region).https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
@@ -460,7 +463,7 @@ export const updateUserStatus = functions.https.onCall(async (data, context) => 
  * Reset Driver Password
  * Auth: COMPANY_ADMIN (own company only)
  */
-export const resetDriverPassword = functions.https.onCall(async (data, context) => {
+export const resetDriverPassword = functions.region(region).https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }

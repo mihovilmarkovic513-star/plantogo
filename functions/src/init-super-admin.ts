@@ -6,6 +6,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+const region = 'europe-west1';
+
 const db = admin.firestore();
 const auth = admin.auth();
 
@@ -26,7 +28,7 @@ enum UserRole {
  * - Password is provided by caller (not hardcoded)
  * - Username is unique and reserved
  */
-export const initializeSuperAdmin = functions.https.onCall(async (data, context) => {
+export const initializeSuperAdmin = functions.region(region).https.onCall(async (data, context) => {
   const { initSecret, username, password, email, firstName, lastName } = data;
 
   // Validate required fields
@@ -155,7 +157,7 @@ export const initializeSuperAdmin = functions.https.onCall(async (data, context)
  * Create Additional Super Admin
  * Can only be called by existing Super Admin
  */
-export const createSuperAdmin = functions.https.onCall(async (data, context) => {
+export const createSuperAdmin = functions.region(region).https.onCall(async (data, context) => {
   // Verify authentication
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
