@@ -7,6 +7,11 @@ import { httpsCallable } from 'firebase/functions';
 import { getFirebaseFunctions } from '@/lib/firebase/client';
 import { ServiceLevel, ServiceLevelLabels, CreateDeliveryItemInput } from '@/lib/types/order';
 import { CustomerType } from '@/lib/types/customer';
+import { 
+  DeviceType, DeviceTypeLabels, DeviceCategory, DeviceCategoryLabels, 
+  Manufacturer, ManufacturerLabels, DeviceCategoriesByType,
+  getModelsForManufacturerAndCategory, getManufacturersForCategory
+} from '@/lib/types/device-catalog';
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -33,7 +38,12 @@ export default function NewOrderPage() {
   const [serviceLevel, setServiceLevel] = useState<ServiceLevel>(ServiceLevel.STANDARD);
   const [plannedDate, setPlannedDate] = useState('');
   const [notes, setNotes] = useState('');
-  const [items, setItems] = useState<CreateDeliveryItemInput[]>([{
+  const [items, setItems] = useState<Array<CreateDeliveryItemInput & {
+    deviceType?: DeviceType;
+    deviceCategory?: DeviceCategory;
+  }>>([{
+    deviceType: DeviceType.WEISSE_WARE,
+    deviceCategory: undefined,
     manufacturer: '',
     model: '',
     productName: '',
@@ -46,6 +56,8 @@ export default function NewOrderPage() {
 
   function addItem() {
     setItems([...items, {
+      deviceType: DeviceType.WEISSE_WARE,
+      deviceCategory: undefined,
       manufacturer: '',
       model: '',
       productName: '',
@@ -62,9 +74,30 @@ export default function NewOrderPage() {
     }
   }
 
-  function updateItem(index: number, field: keyof CreateDeliveryItemInput, value: string | number) {
+  function updateItem(index: number, field: string, value: any) {
     const newItems = [...items];
-    newItems[index] = { ...newItems[index], [field]: value };
+    const item = newItems[index];
+    
+    // Reset dependent fields when parent selection changes
+    if (field === 'deviceType') {
+      newItems[index] = { ...item, deviceType: value, deviceCategory: undefined, manufacturer: '', model: '', productName: '' };
+    } else if (field === 'deviceCategory') {
+      newItems[index] = { ...item, deviceCategory: value, manufacturer: '', model: '', productName: '' };
+    } else if (field === 'manufacturer') {
+      newItems[index] = { ...item, manufacturer: value, model: '', productName: '' };
+    } else if (field === 'model') {
+      // When model is selected, auto-fill productName from catalog
+      const selectedModel = item.deviceCategory && value
+        ? getModelsForManufacturerAndCategory(item.manufacturer as Manufacturer, item.deviceCategory).find(m => m.modelNumber === value)
+        : null;
+      newItems[index] = { 
+        ...item, 
+        model: value,
+        productName: selectedModel ? selectedModel.displayName : DeviceCategoryLabels[item.deviceCategory!] || ''
+      };
+    } else {
+      newItems[index] = { ...item, [field]: value };
+    }
     setItems(newItems);
   }
 
@@ -380,41 +413,84 @@ export default function NewOrderPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Manufacturer *</label>
-                    <input
-                      type="text"
-                      required
-                      value={item.manufacturer}
-                      onChange={e => updateItem(index, 'manufacturer', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      disabled={loading}
-                      placeholder="e.g., Bosch"
-                    />
+                <div className="space-y-4 mt-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Device Type *</label>
+                      <select
+                        required
+                        value={item.deviceType || ''}
+                        onChange={e => updateItem(index, 'deviceType', e.target.value as DeviceType)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        disabled={loading}
+                      >
+                        {Object.entries(DeviceTypeLabels).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                      <select
+                        required
+                        value={item.deviceCategory || ''}
+                        onChange={e => updateItem(index, 'deviceCategory', e.target.value as DeviceCategory)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        disabled={loading || !item.deviceType}
+                      >
+                        <option value="">Select category</option>
+                        {item.deviceType && DeviceCategoriesByType[item.deviceType].map(category => (
+                          <option key={category} value={category}>{DeviceCategoryLabels[category]}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
-                    <input
-                      type="text"
-                      required
-                      value={item.model}
-                      onChange={e => updateItem(index, 'model', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      disabled={loading}
-                      placeholder="e.g., WGG244F40"
-                    />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Manufacturer *</label>
+                      <select
+                        required
+                        value={item.manufacturer}
+                        onChange={e => updateItem(index, 'manufacturer', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        disabled={loading || !item.deviceCategory}
+                      >
+                        <option value="">Select manufacturer</option>
+                        {item.deviceCategory && getManufacturersForCategory(item.deviceCategory).map(mfr => (
+                          <option key={mfr} value={mfr}>{ManufacturerLabels[mfr]}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
+                      <select
+                        required
+                        value={item.model}
+                        onChange={e => updateItem(index, 'model', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        disabled={loading || !item.manufacturer || !item.deviceCategory}
+                      >
+                        <option value="">Select model</option>
+                        {item.manufacturer && item.deviceCategory && 
+                          getModelsForManufacturerAndCategory(item.manufacturer as Manufacturer, item.deviceCategory).map(model => (
+                            <option key={model.modelNumber} value={model.modelNumber}>
+                              {model.modelNumber} - {model.displayName}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
                   </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                     <input
                       type="text"
-                      required
                       value={item.productName}
                       onChange={e => updateItem(index, 'productName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      disabled={loading}
-                      placeholder="e.g., Washing Machine"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                      disabled={true}
+                      placeholder="Auto-filled from model selection"
                     />
                   </div>
                   <div>
