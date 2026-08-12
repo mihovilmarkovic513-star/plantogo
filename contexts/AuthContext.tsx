@@ -26,10 +26,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const auth = getFirebaseAuth();
+    console.log('AuthContext - Setting up auth listener');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('AuthContext - Auth state changed, user:', firebaseUser?.uid);
       if (firebaseUser) {
         await loadUserProfile(firebaseUser);
       } else {
+        console.log('AuthContext - No user, setting loading to false');
         setUser(null);
         setLoading(false);
       }
@@ -40,33 +43,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function loadUserProfile(firebaseUser: User) {
     try {
+      console.log('AuthContext - Loading user profile for:', firebaseUser.uid);
       const db = getFirebaseFirestore();
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       
+      console.log('AuthContext - User doc exists:', userDoc.exists());
+      
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        console.log('AuthContext - User data:', userData);
         
         // Get custom claims from ID token
         const idTokenResult = await firebaseUser.getIdTokenResult();
         const claims = idTokenResult.claims as unknown as CustomClaims;
+        console.log('AuthContext - Custom claims:', claims);
 
-        setUser({
+        const authUser = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
           role: claims.role as UserRole || UserRole.DRIVER,
           companyId: claims.companyId as string | null || null,
           active: claims.active !== false,
-        });
+        };
+        console.log('AuthContext - Setting user:', authUser);
+        setUser(authUser);
       } else {
+        console.log('AuthContext - User document does not exist, signing out');
         // User document doesn't exist - sign out
         await firebaseSignOut(getFirebaseAuth());
         setUser(null);
       }
     } catch (error) {
-      console.error('Error loading user profile:', error);
+      console.error('AuthContext - Error loading user profile:', error);
       setUser(null);
     } finally {
+      console.log('AuthContext - Setting loading to false');
       setLoading(false);
     }
   }
