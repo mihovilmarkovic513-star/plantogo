@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createCompany } from '@/lib/api/functions';
+import { httpsCallable } from 'firebase/functions';
+import { getFirebaseAuth, getFirebaseFunctions } from '@/lib/firebase/client';
 import { CreateCompanyInput } from '@/lib/types/company';
 
 export default function NewCompanyPage() {
