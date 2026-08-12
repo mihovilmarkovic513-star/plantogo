@@ -8,6 +8,7 @@ import { getFirebaseFirestore } from '@/lib/firebase/client';
 import { DeliveryOrder, DeliveryOrderStatus } from '@/lib/types/order';
 import { TourStatus } from '@/lib/types/tour';
 import Link from 'next/link';
+import { geocodeAddress } from '@/lib/utils/geocoding';
 
 export default function NewTourPage() {
   const router = useRouter();
@@ -98,6 +99,25 @@ export default function NewTourPage() {
         const customerDoc = await getDoc(doc(db, 'customers', order.customerId));
         const customerData = customerDoc.data();
 
+        let latitude = customerData?.deliveryAddress?.latitude || null;
+        let longitude = customerData?.deliveryAddress?.longitude || null;
+
+        // Geocode if coordinates not available
+        if (!latitude || !longitude) {
+          const geocodeResult = await geocodeAddress(
+            customerData?.deliveryAddress?.street || '',
+            customerData?.deliveryAddress?.houseNumber || '',
+            customerData?.deliveryAddress?.postalCode || '',
+            customerData?.deliveryAddress?.city || '',
+            customerData?.deliveryAddress?.country || 'Germany'
+          );
+          
+          if (geocodeResult) {
+            latitude = geocodeResult.latitude;
+            longitude = geocodeResult.longitude;
+          }
+        }
+
         const stopRef = doc(collection(db, 'tours', tourRef.id, 'stops'));
         await setDoc(stopRef, {
           stopId: stopRef.id,
@@ -115,8 +135,8 @@ export default function NewTourPage() {
             postalCode: customerData?.deliveryAddress?.postalCode || '',
             city: customerData?.deliveryAddress?.city || '',
             country: customerData?.deliveryAddress?.country || 'Germany',
-            latitude: customerData?.deliveryAddress?.latitude || null,
-            longitude: customerData?.deliveryAddress?.longitude || null,
+            latitude,
+            longitude,
           },
           createdAt: Timestamp.now(),
           updatedAt: Timestamp.now(),

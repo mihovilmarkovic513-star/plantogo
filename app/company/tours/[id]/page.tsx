@@ -9,6 +9,14 @@ import { Tour, TourStatus, TourStatusLabels } from '@/lib/types/tour';
 import { TourStop, TourStopType, TourStopStatusLabels } from '@/lib/types/tour-stop';
 import { DeliveryOrder, ServiceLevelLabels } from '@/lib/types/order';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { geocodeAddress } from '@/lib/utils/geocoding';
+import { optimizeRoute } from '@/lib/utils/route-optimization';
+
+const TourMapView = dynamic(() => import('@/components/maps/TourMapView'), {
+  ssr: false,
+  loading: () => <div className="bg-gray-100 rounded-lg h-[600px] flex items-center justify-center">Loading map...</div>,
+});
 
 interface Driver {
   userId: string;
@@ -27,6 +35,9 @@ export default function TourDetailPage() {
   const [selectedDriverId, setSelectedDriverId] = useState('');
   const [assigning, setAssigning] = useState(false);
   const [reordering, setReordering] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
+  const [showMap, setShowMap] = useState(true);
 
   useEffect(() => {
     loadTourData();
@@ -175,6 +186,69 @@ export default function TourDetailPage() {
     }
   }
 
+  async function geocodeStops() {
+    if (!tour || geocoding) return;
+    
+    setGeocoding(true);
+    try {
+      const db = getFirebaseFirestore();
+      let updated = 0;
+      
+      for (const stop of stops) {
+        if (!stop.location.latitude || !stop.location.longitude) {
+          const result = await geocodeAddress(
+            stop.location.street,
+            stop.location.houseNumber || '',
+            stop.location.postalCode,
+            stop.location.city,
+            stop.location.country
+          );
+          
+          if (result) {
+            await updateDoc(doc(db, 'tours', tour.tourId, 'stops', stop.stopId), {
+              'location.latitude': result.latitude,
+              'location.longitude': result.longitude,
+              updatedAt: Timestamp.now(),
+            });
+            updated++;
+          }
+        }
+      }
+      
+      alert(`Geocoded ${updated} stop(s)`);
+      await loadTourData();
+    } catch (error: any) {
+      alert('Failed to geocode stops: ' + error.message);
+    } finally {
+      setGeocoding(false);
+    }
+  }
+
+  async function optimizeRouteOrder() {
+    if (!tour || optimizing) return;
+    
+    setOptimizing(true);
+    try {
+      const result = await optimizeRoute(stops);
+      
+      const db = getFirebaseFirestore();
+      
+      for (const stop of result.stops) {
+        await updateDoc(doc(db, 'tours', tour.tourId, 'stops', stop.stopId), {
+          sequence: stop.sequence,
+          updatedAt: Timestamp.now(),
+        });
+      }
+      
+      alert(`Route optimized! Distance: ${result.totalDistance.toFixed(1)} km, Est. time: ${result.estimatedDuration} min`);
+      await loadTourData();
+    } catch (error: any) {
+      alert('Failed to optimize route: ' + error.message);
+    } finally {
+      setOptimizing(false);
+    }
+  }
+
   if (loading) {
     return <div className="p-6">Loading tour...</div>;
   }
@@ -191,6 +265,36 @@ export default function TourDetailPage() {
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 mt-2">{tour.name}</h1>
       </div>
+
+      <div className="mb-6 flex gap-3">
+        <button
+          onClick={() => setShowMap(!showMap)}
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+        >
+          {showMap ? 'Hide Map' : 'Show Map'}
+        </button>
+        <button
+          onClick={geocodeStops}
+          disabled={geocoding}
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
+        >
+          {geocoding ? 'Geocoding...' : 'Geocode Addresses'}
+        </button>
+        <button
+          onClick={optimizeRouteOrder}
+          disabled={optimizing}
+          className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-gray-400"
+        >
+          {optimizing ? 'Optimizing...' : 'Optimize Route'}
+        </button>
+      </div>
+
+      {showMap && (
+        <div className="mb-6 bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Route Map</h2>
+          <TourMapView stops={stops} />
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2 space-y-6">
