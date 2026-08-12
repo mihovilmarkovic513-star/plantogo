@@ -43,7 +43,7 @@ export default function CompanyDetailPage() {
       } catch (error) {
         console.error('Error loading company:', error);
       } finally {
-        setLoading(true); // Fix typo here
+        setLoading(false);
       }
     }
 
