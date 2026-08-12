@@ -384,10 +384,7 @@ export const createSupervisor = functions.region(region).https.onCall(async (dat
       { email, firstName, lastName }
     );
 
-    return {
-      userId: userRecord.uid,
-      temporaryPassword,
-    };
+    return { userId: userRecord.uid, temporaryPassword };
   } catch (error) {
     functions.logger.error('Error creating supervisor:', error);
     throw new functions.https.HttpsError('internal', 'Failed to create supervisor');
