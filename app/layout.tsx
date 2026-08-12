@@ -15,18 +15,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PlanToGo",
-  description: "Multi-tenant delivery management platform",
+  description: "Delivery management platform",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <AuthProvider>{children}</AuthProvider>
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    </AuthProvider>
   );
 }
