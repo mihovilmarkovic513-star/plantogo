@@ -197,28 +197,20 @@ service cloud.firestore {
       allow delete: if request.auth.uid == resource.data.userId;
     }
     
-    // Phase 2A Collections - All writes via Cloud Functions only
+    // Phase 2A Collections
     
     // Customers collection
     match /customers/{customerId} {
-      allow list: if request.auth != null; // Allow querying (filtering happens in query)
-      allow get: if request.auth != null && 
-                    request.auth.token.companyId == resource.data.companyId;
-      allow write: if false; // Only Cloud Functions can write
+      allow read, write: if request.auth != null;
     }
     
-    // Delivery Orders collection - company-scoped access
+    // Delivery Orders collection
     match /deliveryOrders/{orderId} {
-      allow list: if request.auth != null; // Allow querying (filtering happens in query)
-      allow get: if request.auth != null && 
-                    request.auth.token.companyId == resource.data.companyId;
-      allow write: if false; // Only Cloud Functions can write
+      allow read, write: if request.auth != null;
       
       // Delivery items subcollection
       match /items/{itemId} {
-        allow read: if request.auth != null && 
-                       request.auth.token.companyId == resource.data.companyId;
-        allow write: if false; // Only Cloud Functions can write
+        allow read, write: if request.auth != null;
       }
     }
   }
