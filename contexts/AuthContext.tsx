@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           companyId: claims.companyId as string | null || null,
           active: claims.active !== false,
         };
-        console.log('AuthContext - Setting user:', authUser);
+        console.log('AuthContext - Setting user:', JSON.stringify(authUser, null, 2));
         setUser(authUser);
       } else {
         console.log('AuthContext - User document does not exist, signing out');
