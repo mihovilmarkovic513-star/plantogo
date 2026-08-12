@@ -47,12 +47,13 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
                 <h1 className="text-xl font-bold">PlanToGo</h1>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <a
+                <Link
                   href="/company"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Dashboard
-                </a>
+                </Link>
+                <Link
                   href="/company/customers"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
@@ -60,21 +61,13 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
                 </Link>
                 <Link
                   href="/company/orders"
-                  className={`block px-4 py-2 rounded-md ${
-                    router.pathname.startsWith('/company/orders')
-                      ? 'bg-blue-700 text-white'
-                      : 'text-blue-100 hover:bg-blue-700'
-                  }`}
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Orders
                 </Link>
                 <Link
                   href="/company/tours"
-                  className={`block px-4 py-2 rounded-md ${
-                    router.pathname.startsWith('/company/tours')
-                      ? 'bg-blue-700 text-white'
-                      : 'text-blue-100 hover:bg-blue-700'
-                  }`}
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Tours
                 </Link>
@@ -89,7 +82,7 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Drivers
-                </a>
+                </Link>
               </div>
             </div>
             <div className="flex items-center">
