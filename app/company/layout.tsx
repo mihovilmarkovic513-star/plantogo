@@ -54,16 +54,28 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
                   Dashboard
                 </a>
                 <a
-                  href="/company/drivers"
+                  href="/company/customers"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Drivers
+                  Customers
+                </a>
+                <a
+                  href="/company/orders"
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Orders
                 </a>
                 <a
                   href="/company/supervisors"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Supervisors
+                </a>
+                <a
+                  href="/company/drivers"
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Drivers
                 </a>
               </div>
             </div>

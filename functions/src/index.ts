@@ -18,6 +18,15 @@ export {
   resetDriverPassword,
 } from './phase1-functions';
 
+// Export Phase 2A functions
+export {
+  createCustomer,
+  updateCustomer,
+  updateCustomerStatus,
+  createDeliveryOrder,
+  updateDeliveryOrderStatus,
+} from './phase2a-functions';
+
 // Super Admin Initialization
 export {
   initializeSuperAdmin,
