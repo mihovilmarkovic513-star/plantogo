@@ -62,7 +62,18 @@ export interface DeliveryOrder {
 }
 
 export interface CreateDeliveryOrderInput {
-  customerId: string;
+  // Customer data (inline - no separate customer creation needed)
+  customerType: import('./customer').CustomerType;
+  customerFirstName?: string;
+  customerLastName?: string;
+  customerCompanyName?: string;
+  customerContactPerson?: string;
+  customerPhone: string;
+  customerEmail: string;
+  customerAddress: import('./customer').CustomerAddress;
+  customerNotes?: string;
+  
+  // Order data
   serviceLevel: ServiceLevel;
   plannedDeliveryDate: Date;
   notes?: string;

@@ -1,22 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
-import { getFirebaseFirestore, getFirebaseFunctions } from '@/lib/firebase/client';
+import { getFirebaseFunctions } from '@/lib/firebase/client';
 import { ServiceLevel, ServiceLevelLabels, CreateDeliveryItemInput } from '@/lib/types/order';
-import { Customer, CustomerType } from '@/lib/types/customer';
-import Link from 'next/link';
+import { CustomerType } from '@/lib/types/customer';
 
 export default function NewOrderPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  
+  // Customer data
+  const [customerType, setCustomerType] = useState<CustomerType>(CustomerType.PRIVATE);
+  const [customerFirstName, setCustomerFirstName] = useState('');
+  const [customerLastName, setCustomerLastName] = useState('');
+  const [customerCompanyName, setCustomerCompanyName] = useState('');
+  const [customerContactPerson, setCustomerContactPerson] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerStreet, setCustomerStreet] = useState('');
+  const [customerHouseNumber, setCustomerHouseNumber] = useState('');
+  const [customerPostalCode, setCustomerPostalCode] = useState('');
+  const [customerCity, setCustomerCity] = useState('');
+  const [customerCountry, setCustomerCountry] = useState('');
+  const [customerNotes, setCustomerNotes] = useState('');
+  
+  // Order data
   const [serviceLevel, setServiceLevel] = useState<ServiceLevel>(ServiceLevel.STANDARD);
   const [plannedDate, setPlannedDate] = useState('');
   const [notes, setNotes] = useState('');
@@ -30,41 +43,6 @@ export default function NewOrderPage() {
     notes: '',
   }]);
 
-  useEffect(() => {
-    loadCustomers();
-  }, [user]);
-
-  async function loadCustomers() {
-    if (!user?.companyId) return;
-    
-    try {
-      const db = getFirebaseFirestore();
-      const q = query(
-        collection(db, 'customers'),
-        where('companyId', '==', user.companyId),
-        where('active', '==', true),
-        orderBy('createdAt', 'desc')
-      );
-
-      const snapshot = await getDocs(q);
-      const customersData = snapshot.docs.map(doc => ({
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-      })) as Customer[];
-
-      setCustomers(customersData);
-    } catch (error) {
-      console.error('Error loading customers:', error);
-    }
-  }
-
-  function getCustomerName(customer: Customer): string {
-    if (customer.customerType === CustomerType.BUSINESS) {
-      return customer.companyName || 'N/A';
-    }
-    return `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'N/A';
-  }
 
   function addItem() {
     setItems([...items, {
@@ -95,12 +73,6 @@ export default function NewOrderPage() {
     setLoading(true);
     setError('');
 
-    if (!selectedCustomerId) {
-      setError('Please select a customer');
-      setLoading(false);
-      return;
-    }
-
     if (items.length === 0 || !items[0].manufacturer) {
       setError('Please add at least one delivery item');
       setLoading(false);
@@ -111,7 +83,21 @@ export default function NewOrderPage() {
       const functions = getFirebaseFunctions();
       const createOrderFn = httpsCallable(functions, 'createDeliveryOrder');
       const result = await createOrderFn({
-        customerId: selectedCustomerId,
+        customerType,
+        customerFirstName,
+        customerLastName,
+        customerCompanyName,
+        customerContactPerson,
+        customerPhone,
+        customerEmail,
+        customerAddress: {
+          street: customerStreet,
+          houseNumber: customerHouseNumber,
+          postalCode: customerPostalCode,
+          city: customerCity,
+          country: customerCountry,
+        },
+        customerNotes,
         serviceLevel,
         plannedDeliveryDate: new Date(plannedDate),
         notes,
@@ -137,27 +123,190 @@ export default function NewOrderPage() {
           </div>
         )}
 
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-gray-700">Customer *</label>
-            <Link href="/company/customers/new" className="text-sm text-blue-600 hover:text-blue-800">
-              + Create Customer
-            </Link>
+        <div className="border-b pb-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Customer Information</h3>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Customer Type *</label>
+            <div className="flex gap-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value={CustomerType.PRIVATE}
+                  checked={customerType === CustomerType.PRIVATE}
+                  onChange={e => setCustomerType(e.target.value as CustomerType)}
+                  className="mr-2"
+                  disabled={loading}
+                />
+                Private
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value={CustomerType.BUSINESS}
+                  checked={customerType === CustomerType.BUSINESS}
+                  onChange={e => setCustomerType(e.target.value as CustomerType)}
+                  className="mr-2"
+                  disabled={loading}
+                />
+                Business
+              </label>
+            </div>
           </div>
-          <select
-            required
-            value={selectedCustomerId}
-            onChange={e => setSelectedCustomerId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            disabled={loading}
-          >
-            <option value="">Select a customer</option>
-            {customers.map(customer => (
-              <option key={customer.customerId} value={customer.customerId}>
-                {getCustomerName(customer)} - {customer.address.city}
-              </option>
-            ))}
-          </select>
+
+          {customerType === CustomerType.PRIVATE ? (
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerFirstName}
+                  onChange={e => setCustomerFirstName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerLastName}
+                  onChange={e => setCustomerLastName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerCompanyName}
+                  onChange={e => setCustomerCompanyName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+                <input
+                  type="text"
+                  value={customerContactPerson}
+                  onChange={e => setCustomerContactPerson(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+              <input
+                type="tel"
+                required
+                value={customerPhone}
+                onChange={e => setCustomerPhone(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                disabled={loading}
+                placeholder="+43 123 456789"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                required
+                value={customerEmail}
+                onChange={e => setCustomerEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                disabled={loading}
+                placeholder="customer@example.com"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 mb-4">
+            <h4 className="text-sm font-medium text-gray-700">Delivery Address</h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Street *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerStreet}
+                  onChange={e => setCustomerStreet(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">House Number *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerHouseNumber}
+                  onChange={e => setCustomerHouseNumber(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerPostalCode}
+                  onChange={e => setCustomerPostalCode(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerCity}
+                  onChange={e => setCustomerCity(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                <input
+                  type="text"
+                  required
+                  value={customerCountry}
+                  onChange={e => setCustomerCountry(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  disabled={loading}
+                  placeholder="Austria"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Customer Notes</label>
+            <textarea
+              value={customerNotes}
+              onChange={e => setCustomerNotes(e.target.value)}
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              disabled={loading}
+              placeholder="Notes about this customer..."
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

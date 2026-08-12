@@ -191,7 +191,7 @@ export const updateCustomerStatus = functions.region(region).https.onCall(async 
 });
 
 /**
- * Create Delivery Order
+ * Create Delivery Order (with inline customer creation)
  * Auth: COMPANY_ADMIN only
  */
 export const createDeliveryOrder = functions.region(region).https.onCall(async (data, context) => {
@@ -208,10 +208,22 @@ export const createDeliveryOrder = functions.region(region).https.onCall(async (
     throw new functions.https.HttpsError('failed-precondition', 'Company Admin must have a companyId');
   }
 
-  const { customerId, serviceLevel, plannedDeliveryDate, notes, items } = data;
+  const { 
+    customerType, customerFirstName, customerLastName, customerCompanyName, customerContactPerson,
+    customerPhone, customerEmail, customerAddress, customerNotes,
+    serviceLevel, plannedDeliveryDate, notes, items 
+  } = data;
 
-  if (!customerId || !serviceLevel || !plannedDeliveryDate) {
+  if (!customerType || !customerPhone || !customerEmail || !customerAddress || !serviceLevel || !plannedDeliveryDate) {
     throw new functions.https.HttpsError('invalid-argument', 'Missing required fields');
+  }
+
+  if (customerType === CustomerType.PRIVATE && (!customerFirstName || !customerLastName)) {
+    throw new functions.https.HttpsError('invalid-argument', 'Private customers require firstName and lastName');
+  }
+
+  if (customerType === CustomerType.BUSINESS && !customerCompanyName) {
+    throw new functions.https.HttpsError('invalid-argument', 'Business customers require companyName');
   }
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -219,14 +231,25 @@ export const createDeliveryOrder = functions.region(region).https.onCall(async (
   }
 
   try {
-    // Verify customer exists and belongs to same company
-    const customerDoc = await db.collection('customers').doc(customerId).get();
-    if (!customerDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'Customer not found');
-    }
-    if (customerDoc.data()?.companyId !== companyId) {
-      throw new functions.https.HttpsError('permission-denied', 'Customer belongs to another company');
-    }
+    // Create customer inline
+    const customerRef = db.collection('customers').doc();
+    await customerRef.set({
+      customerId: customerRef.id,
+      companyId,
+      customerType,
+      firstName: customerFirstName || null,
+      lastName: customerLastName || null,
+      companyName: customerCompanyName || null,
+      contactPerson: customerContactPerson || null,
+      phone: customerPhone,
+      email: customerEmail,
+      address: customerAddress,
+      notes: customerNotes || null,
+      active: true,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      createdBy: context.auth.uid,
+    });
 
     const orderRef = db.collection('deliveryOrders').doc();
     
@@ -234,7 +257,7 @@ export const createDeliveryOrder = functions.region(region).https.onCall(async (
     await orderRef.set({
       orderId: orderRef.id,
       companyId,
-      customerId,
+      customerId: customerRef.id,
       status: DeliveryOrderStatus.DRAFT,
       serviceLevel,
       plannedDeliveryDate: Timestamp.fromDate(new Date(plannedDeliveryDate)),

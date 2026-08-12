@@ -202,5 +202,26 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.userId; // Mark as read
       allow delete: if request.auth.uid == resource.data.userId;
     }
+    
+    // Customers collection - company-scoped access
+    match /customers/{customerId} {
+      allow read: if request.auth != null && 
+                     request.auth.token.companyId == resource.data.companyId;
+      allow write: if false; // Only Cloud Functions can write
+    }
+    
+    // Delivery Orders collection - company-scoped access
+    match /deliveryOrders/{orderId} {
+      allow read: if request.auth != null && 
+                     request.auth.token.companyId == resource.data.companyId;
+      allow write: if false; // Only Cloud Functions can write
+      
+      // Delivery items subcollection
+      match /items/{itemId} {
+        allow read: if request.auth != null && 
+                       request.auth.token.companyId == resource.data.companyId;
+        allow write: if false; // Only Cloud Functions can write
+      }
+    }
   }
 }
